@@ -18,7 +18,7 @@ export const AuthProvider = ({ children }) => {
         const { displayName, email, photoURL, uid } = user;
         setUser({ displayName, email, photoURL, uid });
         setIsLoading(false);
-        history("/");
+        history("/chat-app");
         return;
       }
       setIsLoading(false);
