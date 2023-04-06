@@ -31,7 +31,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider value={{ user }}>
-      {isLoading ? <Spin /> : children}
+      {isLoading ? <Spin size="large" style={{width: "100%", height: "100vh", alignItems: "center"}} /> : children}
     </AuthContext.Provider>
   );
 };

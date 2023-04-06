@@ -1,5 +1,19 @@
-import { UserAddOutlined } from "@ant-design/icons/lib/icons";
-import { Alert, Avatar, Button, Form, Input, Tooltip } from "antd";
+import {
+  DownOutlined,
+  UserAddOutlined,
+  UserOutlined,
+} from "@ant-design/icons/lib/icons";
+import {
+  Alert,
+  Avatar,
+  Button,
+  Dropdown,
+  Form,
+  Input,
+  Menu,
+  Space,
+  Tooltip,
+} from "antd";
 import styled from "styled-components";
 import Message from "./Message";
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
@@ -7,9 +21,22 @@ import { AppContext } from "../../Contex/AppProvider";
 import { addDocument } from "../../firebase/services";
 import { AuthContext } from "../../Contex/AuthProvider";
 import useFirestore from "../../hooks/useFirestore";
-import { collection, limit, onSnapshot, query, orderBy } from "firebase/firestore";
+import {
+  collection,
+  limit,
+  onSnapshot,
+  query,
+  orderBy,
+  doc,
+  where,
+  updateDoc,
+  deleteField,
+} from "firebase/firestore";
 // import { orderBy } from "lodash";
 import { db } from "../../firebase/config";
+import MenuItem from "antd/es/menu/MenuItem";
+import { onAuthStateChanged } from "firebase/auth";
+import { authentication } from "../../firebase/config";
 
 const HeaderStyled = styled.div`
   display: flex;
@@ -69,14 +96,16 @@ const MessageListStyled = styled.div`
   overflow-y: auto;
 `;
 
+
+
 export default function ChatWindow() {
-  const { selectedRoom, membersss, setIsInviteMemberVisible, messagesa } =
+  const { selectedRoom, membersss, setIsInviteMemberVisible, messagesa, roomList } =
     useContext(AppContext);
-// console.log(messagesa);
-//   const listMess = messagesa.sort(function(a, b) {
-//     return (a.index - b.index);
-// });
-//   console.log(listMess);
+  // console.log(messagesa);
+  //   const listMess = messagesa.sort(function(a, b) {
+  //     return (a.index - b.index);
+  // });
+  //   console.log(listMess);
   const {
     user: { uid, displayName, photoURL },
   } = useContext(AuthContext);
@@ -107,8 +136,6 @@ export default function ChatWindow() {
     }
   };
 
-
-
   useEffect(() => {
     // scroll to bottom after message changed
     if (messageListRef?.current) {
@@ -120,26 +147,47 @@ export default function ChatWindow() {
   // console.log(selectedRoom);
 
   useEffect(() => {
-    
     const q = query(collection(db, "message"), orderBy("createdAt", "asc"));
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const cities = [];
       querySnapshot.forEach((doc) => {
         const a = {
-          ...doc.data()
-        }
+          ...doc.data(),
+        };
         // console.log(a);
         cities.push(a);
-        setListMess(cities)
+        setListMess(cities);
       });
-     
-    }); 
-    
+    });
+
     return () => {
       unsubscribe();
     };
   }, []);
-  console.log(listMess);
+  // console.log(listMess);
+
+  
+  // console.log(roomList);
+
+  const handleDeleteMess = () => {
+    // const  q = query(collection(db, "message"), where("roomId", "==", roomList.id))
+    // const deletemess = onSnapshot(q, (querySnapshot) => {
+      
+    // })
+     onAuthStateChanged(authentication, (user) => {
+      // setCurrentUser(user);
+      console.log(user);
+    });
+  }
+
+  const items = [
+    {
+      key: "1",
+      label: <MenuItem style={{ textAlign: "center" }} onClick={handleDeleteMess} >Delete Message</MenuItem>,
+    },
+  ];
+
+
   return (
     <WrapperStyled>
       {selectedRoom.id ? (
@@ -173,6 +221,21 @@ export default function ChatWindow() {
                   </Tooltip>
                 ))}
               </Avatar.Group>
+              {/* Dropdown */}
+              <Space direction="vertical">
+                <Space wrap>
+                  <Dropdown
+                    menu={{
+                      items,
+                    }}
+                    placement="bottomLeft"
+                  >
+                    <Button>
+                      <DownOutlined />
+                    </Button>
+                  </Dropdown>
+                </Space>
+              </Space>
             </ButtonGroupStyled>
           </HeaderStyled>
 
