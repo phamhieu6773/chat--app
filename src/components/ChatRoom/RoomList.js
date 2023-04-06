@@ -40,7 +40,7 @@ export default function RoomList() {
     <Collapse ghost defaultActiveKey={["1"]}>
       <PanelStyled header="Danh sách các phòng" key="1">
         {
-            roomList.map((room, index) =>  <LinkStyled key={room.id} onClick={() => setSelectedRoomId(room.id)} >{room.name}</LinkStyled>)
+            roomList.map((room) =>  <LinkStyled key={room.id} onClick={() => setSelectedRoomId(room.id)}>{room.name}</LinkStyled>)
         }
 
         <Button type="text" icon={<PlusSquareOutlined />} className="add-room" onClick={handleAddRoom}>
