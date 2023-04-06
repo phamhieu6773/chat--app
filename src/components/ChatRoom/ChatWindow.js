@@ -99,13 +99,8 @@ const MessageListStyled = styled.div`
 
 
 export default function ChatWindow() {
-  const { selectedRoom, membersss, setIsInviteMemberVisible, messagesa, roomList } =
+  const { selectedRoom, membersss, setIsInviteMemberVisible, messagesa } =
     useContext(AppContext);
-  // console.log(messagesa);
-  //   const listMess = messagesa.sort(function(a, b) {
-  //     return (a.index - b.index);
-  // });
-  //   console.log(listMess);
   const {
     user: { uid, displayName, photoURL },
   } = useContext(AuthContext);
@@ -144,7 +139,6 @@ export default function ChatWindow() {
     }
   }, [messagesa]);
 
-  // console.log(selectedRoom);
 
   useEffect(() => {
     const q = query(collection(db, "message"), orderBy("createdAt", "asc"));
@@ -154,7 +148,6 @@ export default function ChatWindow() {
         const a = {
           ...doc.data(),
         };
-        // console.log(a);
         cities.push(a);
         setListMess(cities);
       });
@@ -164,28 +157,19 @@ export default function ChatWindow() {
       unsubscribe();
     };
   }, []);
-  // console.log(listMess);
+  // const handleDeleteMess = () => {
+    
+  //    onAuthStateChanged(authentication, (user) => {
+  //     console.log(user);
+  //   });
+  // }
 
-  
-  // console.log(roomList);
-
-  const handleDeleteMess = () => {
-    // const  q = query(collection(db, "message"), where("roomId", "==", roomList.id))
-    // const deletemess = onSnapshot(q, (querySnapshot) => {
-      
-    // })
-     onAuthStateChanged(authentication, (user) => {
-      // setCurrentUser(user);
-      console.log(user);
-    });
-  }
-
-  const items = [
-    {
-      key: "1",
-      label: <MenuItem style={{ textAlign: "center" }} onClick={handleDeleteMess} >Delete Message</MenuItem>,
-    },
-  ];
+  // const items = [
+  //   {
+  //     key: "1",
+  //     label: <MenuItem style={{ textAlign: "center" }} onClick={handleDeleteMess} >Delete Message</MenuItem>,
+  //   },
+  // ];
 
 
   return (
@@ -222,7 +206,7 @@ export default function ChatWindow() {
                 ))}
               </Avatar.Group>
               {/* Dropdown */}
-              <Space direction="vertical">
+              {/* <Space direction="vertical">
                 <Space wrap>
                   <Dropdown
                     menu={{
@@ -235,7 +219,7 @@ export default function ChatWindow() {
                     </Button>
                   </Dropdown>
                 </Space>
-              </Space>
+              </Space> */}
             </ButtonGroupStyled>
           </HeaderStyled>
 
