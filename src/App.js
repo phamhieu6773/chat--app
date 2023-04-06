@@ -15,7 +15,7 @@ function App() {
         <AppProvider>
         <Routes>
           <Route Component={Login} path="/login" />
-          <Route Component={ChatRoom} path="/chat-app" />
+          <Route Component={ChatRoom} path="/chat--app" />
         </Routes>
         <AddRoomModal />
         <InviteMemberModal />

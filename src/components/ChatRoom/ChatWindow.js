@@ -141,6 +141,7 @@ export default function ChatWindow() {
 
 
   useEffect(() => {
+    if(selectedRoom.id !== undefined) {
     const q = query(collection(db, "message"), where("roomId", "==", selectedRoom.id), orderBy("createdAt", "asc"));
     setListMess([]);
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
@@ -157,7 +158,9 @@ export default function ChatWindow() {
     return () => {
       unsubscribe();
     };
+  }
   }, [selectedRoom.id]);
+  
   // const handleDeleteMess = () => {
     
   //    onAuthStateChanged(authentication, (user) => {
