@@ -4,7 +4,7 @@ import { Row, Col, Button, Typography, message } from "antd";
 import { signInWithPopup, FacebookAuthProvider, GoogleAuthProvider } from "firebase/auth";
 import { authentication } from "../../firebase/config";
 import { db } from "../../firebase/config";
-import { doc, setDoc } from "firebase/firestore";
+import { collection, doc, serverTimestamp, setDoc } from "firebase/firestore";
 import { addDocument, generateKeywords } from "../../firebase/services";
 // const fbProvider = new firebase.auth.FacebookAuthProvider();
 // import {useNavigate} from 'react-router-dom'
@@ -16,17 +16,16 @@ export default function Login() {
     const data = await signInWithPopup(authentication, provider);
     // console.log(data);
 
-    addDocument("user",  {
+    const newDocument = doc(collection(db, "user"), data.user.email);
+    setDoc(newDocument, {
       displayName: data.user.displayName,
       email: data.user.email,
       photoURL: data.user.photoURL,
       uid: data.user.uid,
       providerId: data.user.providerId,
-      keywords: generateKeywords(data.user.displayName?.toLocaleLowerCase())
+      keywords: generateKeywords(data.user.displayName?.toLocaleLowerCase()),
+      createdAt: serverTimestamp(),
     });
-    // await setDoc(doc(db, "user", "hieu"), {
-
-    // });
   };
 
   return (
