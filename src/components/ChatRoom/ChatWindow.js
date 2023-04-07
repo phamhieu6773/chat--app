@@ -96,20 +96,24 @@ const MessageListStyled = styled.div`
   overflow-y: auto;
 `;
 
-
-
 export default function ChatWindow() {
-  const { selectedRoom, membersss, setIsInviteMemberVisible, messagesa } =
-    useContext(AppContext);
+  const {
+    selectedRoom,
+    membersss,
+    setIsInviteMemberVisible,
+    messagesa,
+    setIsOptionSelectionModal,
+  } = useContext(AppContext);
   const {
     user: { uid, displayName, photoURL },
   } = useContext(AuthContext);
   const [inputValue, setInputValue] = useState("");
-  const [listMess, setListMess] = useState([]);
+  // const [listMess, setListMess] = useState([]);
   const [form] = Form.useForm();
   const inputRef = useRef(null);
   const messageListRef = useRef(null);
 
+  
   const handleInputChange = (e) => {
     setInputValue(e.target.value);
   };
@@ -123,6 +127,7 @@ export default function ChatWindow() {
       displayName,
     });
     form.resetFields(["message"]);
+
     // focus to input again after submit
     if (inputRef?.current) {
       setTimeout(() => {
@@ -138,34 +143,40 @@ export default function ChatWindow() {
         messageListRef.current.scrollHeight + 50;
     }
   }, [messagesa]);
-
-
-  useEffect(() => {
-    if(selectedRoom.id !== undefined) {
-    const q = query(collection(db, "message"), where("roomId", "==", selectedRoom.id), orderBy("createdAt", "asc"));
-    setListMess([]);
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      const cities = [];
-      querySnapshot.forEach((doc) => {
-        const a = {
-          ...doc.data(),
-        };
-        cities.push(a);
-        setListMess(cities);
-      });
-    });
-
-    return () => {
-      unsubscribe();
-    };
-  }
-  }, [selectedRoom.id]);
   
+
+  // useEffect(() => {
+  //   if (selectedRoom.id !== undefined && selectedRoom.id) {
+  //     // console.log();
+  //     // setListMess([]);
+  //     console.log(selectedRoom.id);
+  //     const q = query(
+  //       collection(db, "message"),
+  //       where("roomId", "==", selectedRoom.id),
+  //       orderBy("createdAt", "asc")
+  //     );
+  //     const unsubscribe = onSnapshot(q, (querySnapshot) => {
+  //       const cities = [];
+  //       querySnapshot.forEach((doc) => {
+  //         const a = {
+  //           ...doc.data(),
+  //         };
+  //         cities.push(a);
+  //         setListMess(cities);
+  //       });
+  //     });
+
+  //     return () => {
+  //     setListMess([]);
+  //       unsubscribe();
+  //     };
+  //   }
+  // }, [selectedRoom.id]);
+
+  // console.log(messagesa);
+
   // const handleDeleteMess = () => {
-    
-  //    onAuthStateChanged(authentication, (user) => {
-  //     console.log(user);
-  //   });
+
   // }
 
   // const items = [
@@ -174,7 +185,7 @@ export default function ChatWindow() {
   //     label: <MenuItem style={{ textAlign: "center" }} onClick={handleDeleteMess} >Delete Message</MenuItem>,
   //   },
   // ];
-
+  // console.log(listMess);
 
   return (
     <WrapperStyled>
@@ -197,7 +208,7 @@ export default function ChatWindow() {
               >
                 Mời
               </Button>
-              <Avatar.Group size="small" maxCount={2}>
+              <Avatar.Group size="small" maxCount={2} style={{marginLeft: 2, marginRight: 2}}>
                 {membersss.map((member) => (
                   <Tooltip key={member.id} title={member.displayName}>
                     <Avatar src={member.photoURL}>
@@ -210,7 +221,12 @@ export default function ChatWindow() {
                 ))}
               </Avatar.Group>
               {/* Dropdown */}
-              {/* <Space direction="vertical">
+              <Button
+                onClick={() => setIsOptionSelectionModal(true)}
+              >
+                <DownOutlined />
+              </Button>
+              {/* <Space >
                 <Space wrap>
                   <Dropdown
                     menu={{
@@ -229,9 +245,9 @@ export default function ChatWindow() {
 
           <ContentStyled>
             <MessageListStyled ref={messageListRef}>
-              {listMess.map((mes) => (
+              {messagesa.map((mes, i) => (
                 <Message
-                  key={mes.id}
+                  key={i}
                   text={mes.text}
                   photoURL={mes.photoURL}
                   displayName={mes.displayName}
@@ -242,6 +258,7 @@ export default function ChatWindow() {
             <FormStyled form={form}>
               <Form.Item className="item" name="message">
                 <Input
+                  ref={inputRef}
                   onChange={handleInputChange}
                   onPressEnter={handleOnSubmit}
                   placeholder="Nhập tin nhắn..."

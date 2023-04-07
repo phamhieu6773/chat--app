@@ -1,4 +1,4 @@
-import { PlusSquareOutlined } from "@ant-design/icons";
+import { PlusSquareOutlined, EditOutlined } from "@ant-design/icons";
 import { Button, Collapse, Typography } from "antd";
 import styled from "styled-components";
 import { useContext } from "react";
@@ -29,21 +29,42 @@ const LinkStyled = styled(Typography.Link)`
 `;
 
 export default function RoomList() {
-
-  const {roomList, setIsAddRoomVisible, setSelectedRoomId} = useContext(AppContext)
-
+  const { roomList, setIsAddRoomVisible, setSelectedRoomId, setIsEditRoomVisible } =
+    useContext(AppContext);
 
   const handleAddRoom = () => {
-    setIsAddRoomVisible(true)
-  }
+    setIsAddRoomVisible(true);
+  };
+
+  const handleEditRoom = () => {
+    setIsEditRoomVisible(true);
+  };
   return (
     <Collapse ghost defaultActiveKey={["1"]}>
       <PanelStyled header="Danh sách các phòng" key="1">
-        {
-            roomList.map((room) =>  <LinkStyled key={room.id} onClick={() => setSelectedRoomId(room.id)}>{room.name}</LinkStyled>)
-        }
+        {roomList.map((room) => (
+          <div
+            key={room.id}
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <LinkStyled onClick={() => setSelectedRoomId(room.id)}>
+              {room.name}
+            </LinkStyled>
+            <LinkStyled onClick={handleEditRoom}><EditOutlined  /></LinkStyled>
+            
+          </div>
+        ))}
 
-        <Button type="text" icon={<PlusSquareOutlined />} className="add-room" onClick={handleAddRoom}>
+        <Button
+          type="text"
+          icon={<PlusSquareOutlined />}
+          className="add-room"
+          onClick={handleAddRoom}
+        >
           Thêm phòng
         </Button>
       </PanelStyled>

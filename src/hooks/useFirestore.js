@@ -3,6 +3,7 @@ import {
   onSnapshot,
   query,
   where,
+  orderBy
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { db } from "../firebase/config";
@@ -18,7 +19,7 @@ const useFirestore = (collectionName, condition) => {
             condition.fieldName,
             condition.operator,
             condition.compareValue
-          )
+          ), orderBy("createdAt", "asc")
         )
       : query(collectionRef);
     const unsubscribe = onSnapshot(q, (querySnapshot) => {

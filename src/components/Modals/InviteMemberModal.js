@@ -105,7 +105,7 @@ const fetchUserList = async (search, curMembers) => {
   }
 };
 
-export default function InviteMemberModal() {
+export default function InviteMemberModal () {
   const { isInviteMemberVisible, setIsInviteMemberVisible, selectedRoom, selectedRoomId } =
     useContext(AppContext);
   const [value, setValue] = useState([]);

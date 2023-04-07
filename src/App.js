@@ -7,6 +7,8 @@ import { AuthProvider } from "./Contex/AuthProvider";
 import AppProvider from "./Contex/AppProvider";
 import AddRoomModal from "./components/Modals/AddRoomModal";
 import InviteMemberModal from "./components/Modals/InviteMemberModal";
+import OptionSelectionModal from "./components/Modals/OptionSelectionModal";
+import EiditRoomModal from "./components/Modals/EiditRoomModal";
 
 function App() {
   return (
@@ -18,8 +20,10 @@ function App() {
           <Route Component={ChatRoom} path="/chat--app" />
         </Routes>
         <AddRoomModal />
+        <EiditRoomModal />
         <InviteMemberModal />
-        </AppProvider>
+        <OptionSelectionModal />
+        </AppProvider>  
       </AuthProvider>
     </BrowserRouter>
   );

@@ -6,8 +6,12 @@ export const AppContext = createContext();
 
 export default function AppProvider({ children }) {
   const [isAddRoomVisible, setIsAddRoomVisible] = useState(false);
+  const [isEditRoomVisible, setIsEditRoomVisible] = useState(false);
   const [isInviteMemberVisible, setIsInviteMemberVisible] = useState(false);
+  const [isOptionSelectionModal, setIsOptionSelectionModal] = useState(false);
   const [selectedRoomId, setSelectedRoomId] = useState("");
+  
+  // const [selectedMessId, setSelectedMessId] = useState("");
 
   const {
     user: { uid },
@@ -62,6 +66,15 @@ export default function AppProvider({ children }) {
   }, [selectedRoom.id]);
 
   const messagesa = useFirestore("message", condition);
+
+  // const selectedMessage = useMemo(
+  //   () =>
+  //   messagesa.find((mess) => mess.id === selectedMessId) || {
+  //       members: ["null"],
+  //     },
+  //   [roomList, selectedMessId]
+  // );
+
   // console.log(messagesa);
   return (
     <AppContext.Provider
@@ -72,10 +85,14 @@ export default function AppProvider({ children }) {
         messagesa,
         isAddRoomVisible,
         setIsAddRoomVisible,
+        isEditRoomVisible,
+        setIsEditRoomVisible,
         selectedRoomId,
         setSelectedRoomId,
         isInviteMemberVisible,
         setIsInviteMemberVisible,
+        isOptionSelectionModal,
+        setIsOptionSelectionModal,
       }}
     >
       {children}

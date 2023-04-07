@@ -36,7 +36,9 @@ export default function UserInfo() {
   return (
     <UserInfoStyled>
       <div style={{ display: "flex" }}>
-        <Avatar src={photoURL}></Avatar>
+        <div style={{width: 32}}> 
+        <Avatar src={photoURL} ></Avatar>
+        </div>
         <div style={{ marginTop: 5 }}>
           <Typography.Text className="username">
             {displayName}
