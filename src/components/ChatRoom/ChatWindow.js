@@ -1,7 +1,11 @@
 import {
+  CameraOutlined,
   DownOutlined,
+  UploadOutlined,
   UserAddOutlined,
   UserOutlined,
+  SmileOutlined,
+  SendOutlined,
 } from "@ant-design/icons/lib/icons";
 import {
   Alert,
@@ -13,6 +17,7 @@ import {
   Menu,
   Space,
   Tooltip,
+  Upload,
 } from "antd";
 import styled from "styled-components";
 import Message from "./Message";
@@ -31,12 +36,17 @@ import {
   where,
   updateDoc,
   deleteField,
+  arrayUnion,
 } from "firebase/firestore";
 // import { orderBy } from "lodash";
-import { db } from "../../firebase/config";
+import { db, storage } from "../../firebase/config";
 import MenuItem from "antd/es/menu/MenuItem";
 import { onAuthStateChanged } from "firebase/auth";
 import { authentication } from "../../firebase/config";
+import { v4 as uuid } from "uuid";
+import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
+import Picker from "emoji-picker-react";
+import InputEmojiWithRef from "react-input-emoji";
 
 const HeaderStyled = styled.div`
   display: flex;
@@ -112,27 +122,57 @@ export default function ChatWindow() {
   const [form] = Form.useForm();
   const inputRef = useRef(null);
   const messageListRef = useRef(null);
+  const [img, setImg] = useState(null);
+  // const handleInputChange = (e) => {
+  //   setInputValue(e.target.value);
+  // };
+  const handleOnSubmit = async () => {
+    if (img) {
+      console.log(img);
+      const storageRef = ref(storage, uuid());
+      const uploadTask = uploadBytesResumable(storageRef, img);
 
-  
-  const handleInputChange = (e) => {
-    setInputValue(e.target.value);
-  };
+      uploadTask.on(
+        (error) => {
+          //TODO:Handle Error
+        },
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+            addDocument("message", {
+              img: downloadURL,
+              uid,
+              photoURL,
+              roomId: selectedRoom.id,
+              displayName,
+            });
+          });
+        }
+      );
+      setImg(null);
+      setInputValue("");
+    } else {
+      if (inputValue === "") {
+        <Alert message="Tin nhắn trống" type="success" />;
+      } else {
+        await addDocument("message", {
+          text: inputValue,
+          // image: inputValue,
+          uid,
+          photoURL,
+          roomId: selectedRoom.id,
+          displayName,
+        });
+      }
 
-  const handleOnSubmit = () => {
-    addDocument("message", {
-      text: inputValue,
-      uid,
-      photoURL,
-      roomId: selectedRoom.id,
-      displayName,
-    });
-    form.resetFields(["message"]);
-
-    // focus to input again after submit
-    if (inputRef?.current) {
-      setTimeout(() => {
-        inputRef.current.focus();
-      });
+      form.resetFields(["message"]);
+      // focus to input again after submit
+      if (inputRef?.current) {
+        setTimeout(() => {
+          inputRef.current.focus();
+        });
+      }
+      setImg(null);
+      setInputValue("");
     }
   };
 
@@ -143,50 +183,8 @@ export default function ChatWindow() {
         messageListRef.current.scrollHeight + 50;
     }
   }, [messagesa]);
-  
 
-  // useEffect(() => {
-  //   if (selectedRoom.id !== undefined && selectedRoom.id) {
-  //     // console.log();
-  //     // setListMess([]);
-  //     console.log(selectedRoom.id);
-  //     const q = query(
-  //       collection(db, "message"),
-  //       where("roomId", "==", selectedRoom.id),
-  //       orderBy("createdAt", "asc")
-  //     );
-  //     const unsubscribe = onSnapshot(q, (querySnapshot) => {
-  //       const cities = [];
-  //       querySnapshot.forEach((doc) => {
-  //         const a = {
-  //           ...doc.data(),
-  //         };
-  //         cities.push(a);
-  //         setListMess(cities);
-  //       });
-  //     });
-
-  //     return () => {
-  //     setListMess([]);
-  //       unsubscribe();
-  //     };
-  //   }
-  // }, [selectedRoom.id]);
-
-  // console.log(messagesa);
-
-  // const handleDeleteMess = () => {
-
-  // }
-
-  // const items = [
-  //   {
-  //     key: "1",
-  //     label: <MenuItem style={{ textAlign: "center" }} onClick={handleDeleteMess} >Delete Message</MenuItem>,
-  //   },
-  // ];
-  // console.log(listMess);
-
+  // update file or image
   return (
     <WrapperStyled>
       {selectedRoom.id ? (
@@ -208,7 +206,11 @@ export default function ChatWindow() {
               >
                 Mời
               </Button>
-              <Avatar.Group size="small" maxCount={2} style={{marginLeft: 2, marginRight: 2}}>
+              <Avatar.Group
+                size="small"
+                maxCount={2}
+                style={{ marginLeft: 2, marginRight: 2 }}
+              >
                 {membersss.map((member) => (
                   <Tooltip key={member.id} title={member.displayName}>
                     <Avatar src={member.photoURL}>
@@ -221,25 +223,9 @@ export default function ChatWindow() {
                 ))}
               </Avatar.Group>
               {/* Dropdown */}
-              <Button
-                onClick={() => setIsOptionSelectionModal(true)}
-              >
+              <Button onClick={() => setIsOptionSelectionModal(true)}>
                 <DownOutlined />
               </Button>
-              {/* <Space >
-                <Space wrap>
-                  <Dropdown
-                    menu={{
-                      items,
-                    }}
-                    placement="bottomLeft"
-                  >
-                    <Button>
-                      <DownOutlined />
-                    </Button>
-                  </Dropdown>
-                </Space>
-              </Space> */}
             </ButtonGroupStyled>
           </HeaderStyled>
 
@@ -252,22 +238,47 @@ export default function ChatWindow() {
                   photoURL={mes.photoURL}
                   displayName={mes.displayName}
                   createdAt={mes.createdAt}
+                  img={mes.img}
                 />
               ))}
             </MessageListStyled>
             <FormStyled form={form}>
               <Form.Item className="item" name="message">
-                <Input
+                <InputEmojiWithRef
                   ref={inputRef}
-                  onChange={handleInputChange}
-                  onPressEnter={handleOnSubmit}
+                  value={inputValue}
+                  onChange={setInputValue}
+                  onEnter={handleOnSubmit}
                   placeholder="Nhập tin nhắn..."
                   bordered={false}
                   autoComplete="off"
                 />
               </Form.Item>
+              <div
+                style={{
+                  marginRight: 5,
+                  backgroundColor: "#1677ff",
+                  color: "white",
+                  // height: "100%",
+                  display: "flex",
+                  alignItems: "center",
+                  width: 30,
+                  justifyContent: "center",
+                  borderRadius: "5px",
+                }}
+              >
+                <input
+                  type="file"
+                  style={{ display: "none" }}
+                  id="file"
+                  onChange={(e) => setImg(e.target.files[0])}
+                />
+                <label htmlFor="file">
+                  <CameraOutlined />
+                </label>
+              </div>
               <Button type="primary" onClick={handleOnSubmit}>
-                Gửi
+                <SendOutlined style={{paddingLeft: 3}} />
               </Button>
             </FormStyled>
           </ContentStyled>

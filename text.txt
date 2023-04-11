@@ -1,1 +1,74 @@
 npm install --save antd @ant-design/icons date-fns firebase lodash react-router-dom styled-components
+
+//Đọc message
+
+// useEffect(() => {
+  //   if (selectedRoom.id !== undefined && selectedRoom.id) {
+  //     // console.log();
+  //     // setListMess([]);
+  //     console.log(selectedRoom.id);
+  //     const q = query(
+  //       collection(db, "message"),
+  //       where("roomId", "==", selectedRoom.id),
+  //       orderBy("createdAt", "asc")
+  //     );
+  //     const unsubscribe = onSnapshot(q, (querySnapshot) => {
+  //       const cities = [];
+  //       querySnapshot.forEach((doc) => {
+  //         const a = {
+  //           ...doc.data(),
+  //         };
+  //         cities.push(a);
+  //         setListMess(cities);
+  //       });
+  //     });
+
+  //     return () => {
+  //     setListMess([]);
+  //       unsubscribe();
+  //     };
+  //   }
+  // }, [selectedRoom.id]);
+
+  // console.log(messagesa);
+
+  // const handleDeleteMess = () => {
+
+  // }
+
+  // const items = [
+  //   {
+  //     key: "1",
+  //     label: <MenuItem style={{ textAlign: "center" }} onClick={handleDeleteMess} >Delete Message</MenuItem>,
+  //   },
+  // ];
+  // console.log(listMess);
+
+
+// Dropdow option mesage
+
+  {/* <Space >
+                <Space wrap>
+                  <Dropdown
+                    menu={{
+                      items,
+                    }}
+                    placement="bottomLeft"
+                  >
+                    <Button>
+                      <DownOutlined />
+                    </Button>
+                  </Dropdown>
+                </Space>
+              </Space> */}
+
+
+// Upload image antd
+  {/* <Upload 
+                listType="picture"
+              >
+                <Button icon={<CameraOutlined />}></Button>
+              </Upload> */}
+
+              {/* <img src={Attach} alt="" /> */}
+              

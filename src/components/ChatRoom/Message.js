@@ -19,7 +19,7 @@ const WrapperStyled = styled.div`
 `;
 
 function formatDate(seconds) {
-  let formattedDate = '';
+  let formattedDate = "";
 
   if (seconds) {
     formattedDate = formatRelative(new Date(seconds * 1000), new Date());
@@ -31,17 +31,31 @@ function formatDate(seconds) {
   return formattedDate;
 }
 
-export default function Message({text, displayName,createdAt, photoURL }) {
-    return (
-        <WrapperStyled>
-            <div>
-                <Avatar size='small' src = {photoURL}>{photoURL ? '' : displayName?.charAt(0)?.toUpperCase()}</Avatar>
-                <Typography.Text className='author'>{displayName}</Typography.Text>
-                <Typography.Text className='date' >{formatDate(createdAt?.seconds)}</Typography.Text>
-            </div>
-            <div>
-            <Typography.Text className='content'>{text}</Typography.Text>
-            </div>
-        </WrapperStyled>
-    )
+export default function Message({
+  text,
+  displayName,
+  createdAt,
+  photoURL,
+  img,
+}) {
+  return (
+    <WrapperStyled>
+      <div>
+        <Avatar size="small" src={photoURL}>
+          {photoURL ? "" : displayName?.charAt(0)?.toUpperCase()}
+        </Avatar>
+        <Typography.Text className="author">{displayName}</Typography.Text>
+        <Typography.Text className="date">
+          {formatDate(createdAt?.seconds)}
+        </Typography.Text>
+      </div>
+      <div>
+        {img ? (
+          <img style={{maxWidth: 200, height: "auto", borderRadius: 10, marginTop: 10}} src={img} alt="" />
+        ) : (
+          <Typography.Text className="content">{text}</Typography.Text>
+        )}
+      </div>
+    </WrapperStyled>
+  );
 }
