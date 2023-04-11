@@ -31,7 +31,7 @@ function formatDate(seconds) {
   return formattedDate;
 }
 
-export default function Message({
+export default function MyMessage({
   text,
   displayName,
   createdAt,
@@ -39,30 +39,18 @@ export default function Message({
   img,
 }) {
   return (
-    // <div style={{float: "right", width: "100%"}}>
-    <div
-      style={{ display: "flex", justifyContent: "flex-start", marginRight: 20 }}
-    >
-      <WrapperStyled
-        style={{
-          backgroundColor: "#ffffff",
-          padding: "5px 10px",
-          borderRadius: 5,
-        }}
-      >
-        <div>
-          <Avatar size="small" src={photoURL}>
-            {photoURL ? "" : displayName?.charAt(0)?.toUpperCase()}
-          </Avatar>
-          <Typography.Text className="author">{displayName}</Typography.Text>
-          <Typography.Text className="date">
-            {formatDate(createdAt?.seconds)}
-          </Typography.Text>
-        </div>
-        <div>
+    <div style = {{display: "flex", justifyContent: "flex-end", marginRight: 20,}} >
+
+    <WrapperStyled style={{ backgroundColor: "#e8ebfa", padding: "5px 10px", borderRadius: 5}} >
+      <div >
+        <Typography.Text className="date" >
+          {formatDate(createdAt?.seconds)}
+        </Typography.Text>
+      </div>
+      <div>
           {img && text ? (
             <div style={{display: "flex", flexDirection: "column"}}>
-              <Typography.Text className="content">{text}</Typography.Text>
+              <Typography.Text className="content" style={{marginLeft: 10}}>{text}</Typography.Text>
               <img
                 style={{
                   maxWidth: 200,
@@ -86,10 +74,10 @@ export default function Message({
               alt=""
             />
           ) : (
-            <Typography.Text className="content">{text}</Typography.Text>
+            <Typography.Text className="content" style={{marginLeft: 10}}>{text}</Typography.Text>
           )}
         </div>
-      </WrapperStyled>
-    </div>
+    </WrapperStyled>
+      </div>
   );
 }

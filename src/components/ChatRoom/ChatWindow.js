@@ -1,52 +1,28 @@
 import {
   CameraOutlined,
   DownOutlined,
-  UploadOutlined,
   UserAddOutlined,
-  UserOutlined,
-  SmileOutlined,
   SendOutlined,
 } from "@ant-design/icons/lib/icons";
 import {
   Alert,
   Avatar,
   Button,
-  Dropdown,
   Form,
-  Input,
-  Menu,
-  Space,
   Tooltip,
-  Upload,
 } from "antd";
 import styled from "styled-components";
 import Message from "./Message";
-import { useContext, useEffect, useMemo, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { AppContext } from "../../Contex/AppProvider";
 import { addDocument } from "../../firebase/services";
 import { AuthContext } from "../../Contex/AuthProvider";
-import useFirestore from "../../hooks/useFirestore";
-import {
-  collection,
-  limit,
-  onSnapshot,
-  query,
-  orderBy,
-  doc,
-  where,
-  updateDoc,
-  deleteField,
-  arrayUnion,
-} from "firebase/firestore";
 // import { orderBy } from "lodash";
-import { db, storage } from "../../firebase/config";
-import MenuItem from "antd/es/menu/MenuItem";
-import { onAuthStateChanged } from "firebase/auth";
-import { authentication } from "../../firebase/config";
+import { storage } from "../../firebase/config";
 import { v4 as uuid } from "uuid";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
-import Picker from "emoji-picker-react";
 import InputEmojiWithRef from "react-input-emoji";
+import MyMessage from "./MyMessage";
 
 const HeaderStyled = styled.div`
   display: flex;
@@ -126,12 +102,12 @@ export default function ChatWindow() {
   // const handleInputChange = (e) => {
   //   setInputValue(e.target.value);
   // };
+  
   const handleOnSubmit = async () => {
-    if (img) {
+    if (img && inputValue) {
       console.log(img);
       const storageRef = ref(storage, uuid());
       const uploadTask = uploadBytesResumable(storageRef, img);
-
       uploadTask.on(
         (error) => {
           //TODO:Handle Error
@@ -144,6 +120,7 @@ export default function ChatWindow() {
               photoURL,
               roomId: selectedRoom.id,
               displayName,
+              text: inputValue,
             });
           });
         }
@@ -151,29 +128,70 @@ export default function ChatWindow() {
       setImg(null);
       setInputValue("");
     } else {
-      if (inputValue === "") {
-        <Alert message="Tin nhắn trống" type="success" />;
+      if (img) {
+        const storageRef = ref(storage, uuid());
+        const uploadTask = uploadBytesResumable(storageRef, img);
+        uploadTask.on(
+          "state_changed",
+          (snapshot) => {
+            // Observe state change events such as progress, pause, and resume
+            // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+            const progress =
+              (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            console.log("Upload is " + progress + "% done");
+            // eslint-disable-next-line default-case
+            switch (snapshot.state) {
+              case "paused":
+                console.log("Upload is paused");
+                break;
+              case "running":
+                console.log("Upload is running");
+                break;
+            }
+          },
+          (error) => {
+            // Handle unsuccessful uploads
+          },
+          () => {
+            getDownloadURL(uploadTask.snapshot.ref).then(
+              async (downloadURL) => {
+                await addDocument("message", {
+                  img: downloadURL,
+                  uid,
+                  photoURL,
+                  roomId: selectedRoom.id,
+                  displayName,
+                });
+              }
+            );
+          }
+        );
+        setImg(null);
+        setInputValue("");
       } else {
-        await addDocument("message", {
-          text: inputValue,
-          // image: inputValue,
-          uid,
-          photoURL,
-          roomId: selectedRoom.id,
-          displayName,
-        });
+        if (inputValue === "") {
+          <Alert message="Tin nhắn trống" type="success" />;
+        } else {
+          await addDocument("message", {
+            text: inputValue,
+            uid,
+            photoURL,
+            roomId: selectedRoom.id,
+            displayName,
+          });
+        }
       }
-
-      form.resetFields(["message"]);
-      // focus to input again after submit
-      if (inputRef?.current) {
-        setTimeout(() => {
-          inputRef.current.focus();
-        });
-      }
-      setImg(null);
-      setInputValue("");
     }
+
+    form.resetFields(["message"]);
+    // focus to input again after submit
+    if (inputRef?.current) {
+      setTimeout(() => {
+        inputRef.current.focus();
+      });
+    }
+    setImg(null);
+    setInputValue("");
   };
 
   useEffect(() => {
@@ -183,10 +201,12 @@ export default function ChatWindow() {
         messageListRef.current.scrollHeight + 50;
     }
   }, [messagesa]);
+  // console.log(messagesa);
+  // console.log(uid);
 
   // update file or image
   return (
-    <WrapperStyled>
+    <WrapperStyled style={{ backgroundColor: "#f5f5f5" }}>
       {selectedRoom.id ? (
         <>
           <HeaderStyled>
@@ -230,19 +250,35 @@ export default function ChatWindow() {
           </HeaderStyled>
 
           <ContentStyled>
-            <MessageListStyled ref={messageListRef}>
-              {messagesa.map((mes, i) => (
-                <Message
-                  key={i}
-                  text={mes.text}
-                  photoURL={mes.photoURL}
-                  displayName={mes.displayName}
-                  createdAt={mes.createdAt}
-                  img={mes.img}
-                />
-              ))}
+            <MessageListStyled
+              ref={messageListRef}
+              style={{ margin: "0px 30px" }}
+            >
+              {messagesa.map((mes, i) => {
+                // console.log(mes.uid);
+                // console.log(uid === mes.uid);
+                return mes.uid !== uid ? (
+                  <Message
+                    key={i}
+                    text={mes.text}
+                    photoURL={mes.photoURL}
+                    displayName={mes.displayName}
+                    createdAt={mes.createdAt}
+                    img={mes.img}
+                  />
+                ) : (
+                  <MyMessage
+                    key={i}
+                    text={mes.text}
+                    photoURL={mes.photoURL}
+                    displayName={mes.displayName}
+                    createdAt={mes.createdAt}
+                    img={mes.img}
+                  />
+                );
+              })}
             </MessageListStyled>
-            <FormStyled form={form}>
+            <FormStyled form={form} style={{ margin: "0px 30px" }}>
               <Form.Item className="item" name="message">
                 <InputEmojiWithRef
                   ref={inputRef}
@@ -278,7 +314,7 @@ export default function ChatWindow() {
                 </label>
               </div>
               <Button type="primary" onClick={handleOnSubmit}>
-                <SendOutlined style={{paddingLeft: 3}} />
+                <SendOutlined style={{ paddingLeft: 3 }} />
               </Button>
             </FormStyled>
           </ContentStyled>

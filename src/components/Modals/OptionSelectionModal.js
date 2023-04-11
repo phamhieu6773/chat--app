@@ -26,7 +26,7 @@ export default function OptionSelectionModal() {
   return (
     <div >
       <Modal
-        style={{left: 660, top: 50}}
+        style={{right: 'calc(-50% + 110px)', top: 50}}
         open={isOptionSelectionModal}
         onCancel={handleCancel}
         closable={false}
