@@ -5,7 +5,7 @@ import { signInWithPopup, FacebookAuthProvider, GoogleAuthProvider } from "fireb
 import { authentication } from "../../firebase/config";
 import { db } from "../../firebase/config";
 import { collection, doc, serverTimestamp, setDoc } from "firebase/firestore";
-import { addDocument, generateKeywords } from "../../firebase/services";
+import {  generateKeywords } from "../../firebase/services";
 // const fbProvider = new firebase.auth.FacebookAuthProvider();
 // import {useNavigate} from 'react-router-dom'
 export default function Login() {

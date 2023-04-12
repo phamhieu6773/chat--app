@@ -3,6 +3,10 @@ import { authentication } from "../firebase/config";
 import { onAuthStateChanged } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { Spin } from "antd";
+import { LoadingOutlined } from "@ant-design/icons";
+import Loading from "../img/loading2.json"
+import Lottie from "lottie-react"
+
 
 export const AuthContext = createContext();
 
@@ -29,9 +33,10 @@ export const AuthProvider = ({ children }) => {
     };
   }, [history]);
 
+
   return (
     <AuthContext.Provider value={{ user }}>
-      {isLoading ? <Spin size="large" style={{width: "100%", height: "100vh", alignItems: "center"}} /> : children}
+      {isLoading ? <Lottie animationData={Loading} size= "100px"  style={{width: "100%", height: "100vh",display: "flex", alignItems: "center", justifyContent:"center"}} /> : children}
     </AuthContext.Provider>
   );
 };
