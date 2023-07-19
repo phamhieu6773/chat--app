@@ -7,20 +7,31 @@ import { deleteDoc, doc, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase/config";
 
 export default function EiditRoomModal() {
-  const { isEditRoomVisible, setIsEditRoomVisible, selectedRoomId, selectedRoom} = useContext(AppContext);
-//   console.log(selectedRoomId);
-//   const {
-//     user: { uid },
-//   } = useContext(AuthContext);
+  const {
+    isEditRoomVisible,
+    setIsEditRoomVisible,
+    selectedRoomId,
+    selectedRoom,
+  } = useContext(AppContext);
+  //   console.log(selectedRoomId);
+  //   const {
+  //     user: { uid },
+  //   } = useContext(AuthContext);
   const [form] = Form.useForm();
   const handleOk = () => {
-      console.log({formData: form.getFieldsValue()});
-    const roomRef = doc(db, "rooms", selectedRoomId)
-    updateDoc(roomRef, {
-      name: form.getFieldsValue().name,
-      description: form.getFieldsValue().description
-    })
-    form.resetFields();
+    if (
+      form.getFieldsValue().name !== undefined &&
+      form.getFieldsValue().description !== undefined
+    ) {
+      console.log({ formData: form.getFieldsValue() });
+      const roomRef = doc(db, "rooms", selectedRoomId);
+      updateDoc(roomRef, {
+        name: form.getFieldsValue().name,
+        description: form.getFieldsValue().description,
+      });
+      form.resetFields();
+      setIsEditRoomVisible(false);
+    }
     setIsEditRoomVisible(false);
   };
   const handleCancel = () => {
@@ -28,11 +39,11 @@ export default function EiditRoomModal() {
   };
 
   const handleDelete = () => {
-    const roomRef = doc(db, "rooms", selectedRoomId)
-    deleteDoc(roomRef)
+    const roomRef = doc(db, "rooms", selectedRoomId);
+    deleteDoc(roomRef);
     form.resetFields();
     setIsEditRoomVisible(false);
-  }
+  };
 
   return (
     <div>
@@ -41,10 +52,16 @@ export default function EiditRoomModal() {
         open={isEditRoomVisible}
         onOk={handleOk}
         onCancel={handleCancel}
-        footer = {[
-            <Button key ="1" onClick={handleCancel}>Cancel</Button>,
-            <Button key ="2" type="primary" onClick={handleOk}>Ok</Button>,
-            <Button key ="3" type="primary" onClick={handleDelete}>Delete Room</Button>
+        footer={[
+          <Button key="1" onClick={handleCancel}>
+            Cancel
+          </Button>,
+          <Button key="2" type="primary" onClick={handleOk}>
+            Ok
+          </Button>,
+          <Button key="3" type="primary" onClick={handleDelete}>
+            Delete Room
+          </Button>,
         ]}
       >
         <Form form={form} layout="vertical">

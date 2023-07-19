@@ -9,12 +9,16 @@ export default function AddRoomModal() {
   const {user: {uid}} = useContext(AuthContext);
   const [form] = Form.useForm();
   const handleOk = () => {
+    if (form.getFieldsValue().name !== undefined && form.getFieldsValue().description !== undefined){
+      console.log(form.getFieldsValue().name);
     console.log({formData: form.getFieldsValue()});
     addDocument("rooms", {
         ...form.getFieldsValue(), 
         members: [uid]
     })
     form.resetFields();
+    setIsAddRoomVisible(false);
+    }
     setIsAddRoomVisible(false);
   };
   const handleCancel = () => {

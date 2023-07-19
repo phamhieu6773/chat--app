@@ -259,7 +259,7 @@ export default function ChatWindow() {
           <ContentStyled>
             <MessageListStyled
               ref={messageListRef}
-              style={{ margin: "0px 30px" }}
+              style={{ margin: "0px 0px 0px 30px" }}
             >
               {messagesa.map((mes, i) => {
                 // console.log(mes.uid);

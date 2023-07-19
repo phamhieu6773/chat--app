@@ -1,11 +1,17 @@
 import React from "react";
-import { Row, Col, Button, Typography, message } from "antd";
+import { Row, Col, Button, Typography, message, Form, Divider } from "antd";
+import "./Login.css";
 // import firebase, { auth } from '../../firebase/config';
-import { signInWithPopup, FacebookAuthProvider, GoogleAuthProvider } from "firebase/auth";
+import {
+  signInWithPopup,
+  FacebookAuthProvider,
+  GoogleAuthProvider,
+} from "firebase/auth";
 import { authentication } from "../../firebase/config";
 import { db } from "../../firebase/config";
 import { collection, doc, serverTimestamp, setDoc } from "firebase/firestore";
-import {  generateKeywords } from "../../firebase/services";
+import { generateKeywords } from "../../firebase/services";
+import { FacebookOutlined, GoogleOutlined } from "@ant-design/icons";
 // const fbProvider = new firebase.auth.FacebookAuthProvider();
 // import {useNavigate} from 'react-router-dom'
 export default function Login() {
@@ -29,18 +35,19 @@ export default function Login() {
   };
 
   return (
-    <div>
-      <Row justify="center" style={{ height: 800 }}>
-        <Col span={8}>
-          <Typography style={{ textAlign: "center" }}>Chat App</Typography>
-          <Button style={{ width: "100%", marginBottom: 5 }} onClick={() => handleLogin(ggProvider)} >
-            Đăng nhập bằng Google
-          </Button>
-          <Button style={{ width: "100%" }} onClick={() => handleLogin(fbProvider)}>
-            Đăng nhập bằng Facebook
-          </Button>
-        </Col>
-      </Row>
+    <div className="login_Bg">
+      <Form className="loginForm">
+        <Typography.Title block>Chat App</Typography.Title>
+        <Button className="buttonLogin"  type="primary" block onClick={() => handleLogin(ggProvider)}>
+          <GoogleOutlined style={{color: "#de4032"}}/> Google
+        </Button>
+        <Divider style={{ borderColor: "black" }}>or Login with</Divider>
+        <Button className="buttonLogin" type="primary" block onClick={() => handleLogin(fbProvider)}>
+          <FacebookOutlined style={{color: "blue"}}/> Facebook
+        </Button>
+      </Form>
     </div>
   );
 }
+
+
